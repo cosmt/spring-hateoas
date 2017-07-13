@@ -17,6 +17,8 @@ package org.springframework.hateoas.core;
 
 import java.lang.reflect.Method;
 
+import org.springframework.web.bind.annotation.RequestMethod;
+
 /**
  * Strategy interface to discover a URI mapping for either a given type or method.
  * 
@@ -49,4 +51,6 @@ public interface MappingDiscoverer {
 	 * @return the method mapping including the type-level one or {@literal null} if neither of them present.
 	 */
 	String getMapping(Class<?> type, Method method);
+
+	RequestMethod[] getRequestType(Class<?> type, Method method);
 }

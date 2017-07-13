@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * {@link MappingDiscoverer} implementation that inspects mappings from a particular annotation.
@@ -106,6 +107,15 @@ public class AnnotationMappingDiscoverer implements MappingDiscoverer {
 		return typeMapping == null || "/".equals(typeMapping) ? mapping[0] : join(typeMapping, mapping[0]);
 	}
 
+	@Override
+	public RequestMethod[] getRequestType(Class<?> type, Method method) {
+
+		Assert.notNull(type, "Type must not be null!");
+		Assert.notNull(method, "Method must not be null!");
+
+		return getHttpMethodsFrom(findMergedAnnotation(method, annotationType));
+	}
+
 	private String[] getMappingFrom(Annotation annotation) {
 
 		Object value = mappingAttributeName == null ? getValue(annotation) : getValue(annotation, mappingAttributeName);
@@ -120,6 +130,13 @@ public class AnnotationMappingDiscoverer implements MappingDiscoverer {
 
 		throw new IllegalStateException(String.format(
 				"Unsupported type for the mapping attribute! Support String and String[] but got %s!", value.getClass()));
+	}
+
+	private RequestMethod[] getHttpMethodsFrom(Annotation annotation) {
+
+		Object value = getValue(annotation, "method");
+
+		return (RequestMethod[]) value;
 	}
 
 	/**
